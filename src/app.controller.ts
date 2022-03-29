@@ -7,6 +7,12 @@ export class AppController {
 
   @Get()
   getHello(): string {
-    return this.appService.getHello();
+     return 'This action returns all cats';
   }
+
+  @Get('/test')
+  getTest(): string {
+    return 'This action returns all cats';
+  }
+
 }
