@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '@prisma/client';
 import { UserService } from 'src/user/user.service';
+import { jwtConstants } from './constants';
 
 @Injectable()
 export class AuthService {
@@ -18,11 +19,18 @@ export class AuthService {
         }
         return null;
     }
-
-    async login(user:User): Promise<any> {
+    
+    async login(user:User): Promise<{accessToken:string, refreshToken:string}> {
         const payload = { email: user.email, sub: user.id };
+        
+        const refreshToken = this.createRefreshToken(user);
+
+        //set user refresh token expire in 1 week
+        await this.usersService.setRefreshToken(user, refreshToken);
+        
         return {
-            access_token: this.jwtService.sign(payload),
+            accessToken: this.jwtService.sign(payload),
+            refreshToken: refreshToken,
         };
     }
 
@@ -33,4 +41,9 @@ export class AuthService {
     public async getUser(token:string): Promise<any> {
 
     }
+
+    private createRefreshToken(user:User): string {
+        return this.jwtService.sign({user: user.id, email: user.email}, {expiresIn: '1w', secret: jwtConstants.refreshTokenSecret}); 
+    }
 }
+

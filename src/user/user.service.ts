@@ -12,4 +12,11 @@ export class UserService {
           });
     }
 
+    async setRefreshToken(user:User, refreshToken:string): Promise<User | null> {
+        return this.prisma.user.update({
+            where: {id: user.id},
+            data: {refreshToken: refreshToken},
+        });
+
+    }
 }
