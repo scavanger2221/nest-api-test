@@ -20,12 +20,16 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
         if (currentAccessToken) {
             try {
-                const user = this.jwtService.verify(currentAccessToken, { secret: jwtConstants.secret });
+                this.jwtService.verify(currentAccessToken, { secret: jwtConstants.secret });
                 //check if token is valid
 
             } catch (error) {
                 //if token is invalid, return false
                 try {
+                    if (!currentRefreshToken) {
+                        return false;
+                    }
+
                     const payload: {} = this.jwtService.decode(currentRefreshToken);
 
                     const user = this.userService.findOne(payload['sub']);

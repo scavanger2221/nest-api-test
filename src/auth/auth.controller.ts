@@ -2,6 +2,7 @@ import {Body,Controller,Get,HttpCode,HttpStatus,Post,Req,Res,UseGuards,} from '@
 import { Request, Response} from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
@@ -20,9 +21,9 @@ export class AuthController {
                 validatedUser,
             );
 
-            res.header('x-access-token', accessToken);
+            res.setHeader('x-access-token', accessToken);
 
-            res.header('x-refresh-token', refreshToken);
+            res.setHeader('x-refresh-token', refreshToken);
 
             return res.jsonp({
                 message: 'Login Successful',
@@ -40,5 +41,19 @@ export class AuthController {
     @Get('profile')
     async getProfile(@Req() req: Request) {
         return req.user;
+    }
+
+    @HttpCode(HttpStatus.OK)
+    @Post('register')
+    async register(@Body() data: RegisterDto, @Res() res: Response) 
+    {
+        const user = await this.authService.register(data);
+        if (user) {
+            return res.jsonp({
+                message: 'User created successfully',
+                status: 'success',
+                data: user,
+            });
+        }
     }
 }

@@ -12,11 +12,16 @@ export class UserService {
           });
     }
 
-    // async setRefreshToken(user:User, refreshToken:string): Promise<User | null> {
-    //     return this.prisma.user.update({
-    //         where: {id: user.id},
-    //         data: {refreshToken: refreshToken},
-    //     });
-
-    // }
+    async create(data:{
+        email:string,
+        password:string,
+        name?:string,
+        surname?:string,
+    }): Promise<User> {
+        return this.prisma.user.create({
+            data: {
+                ...data,
+            },
+        });
+    }
 }
