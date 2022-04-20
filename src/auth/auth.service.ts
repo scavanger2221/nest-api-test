@@ -20,17 +20,10 @@ export class AuthService {
         return null;
     }
     
-    async login(user:User): Promise<{accessToken:string, refreshToken:string}> {
-        const payload = { email: user.email, sub: user.id };
-        
-        const refreshToken = this.createRefreshToken(user);
-
-        //set user refresh token expire in 1 week
-        await this.usersService.setRefreshToken(user, refreshToken);
-        
+    async login(user:User): Promise<{accessToken:string, refreshToken:string}> {        
         return {
-            accessToken: this.jwtService.sign(payload),
-            refreshToken: refreshToken,
+            accessToken: this.createAccessToken(user),
+            refreshToken: this.createRefreshToken(user),
         };
     }
 
@@ -42,8 +35,13 @@ export class AuthService {
 
     }
 
-    private createRefreshToken(user:User): string {
-        return this.jwtService.sign({user: user.id, email: user.email}, {expiresIn: '1w', secret: jwtConstants.refreshTokenSecret}); 
+    public createAccessToken (user:User): string {
+        const payload = { email: user.email, sub: user.id };
+        return this.jwtService.sign(payload);
+    }
+
+    public createRefreshToken(user:User): string {
+        return this.jwtService.sign({sub: user.id, email:user.email}, {expiresIn: '1w', secret:  Buffer.from(jwtConstants.refreshTokenSecret + user.password).toString('base64')});
     }
 }
 

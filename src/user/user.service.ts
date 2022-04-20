@@ -6,17 +6,17 @@ import { PrismaService } from 'src/prisma.service';
 export class UserService {
     constructor(private prisma:PrismaService) {}
 
-    async findOne(email: string): Promise<User | null> {
+    async findOne(id: string): Promise<User | null> {
         return this.prisma.user.findUnique({
-            where: {email: email},
+            where: {id: id},
           });
     }
 
-    async setRefreshToken(user:User, refreshToken:string): Promise<User | null> {
-        return this.prisma.user.update({
-            where: {id: user.id},
-            data: {refreshToken: refreshToken},
-        });
+    // async setRefreshToken(user:User, refreshToken:string): Promise<User | null> {
+    //     return this.prisma.user.update({
+    //         where: {id: user.id},
+    //         data: {refreshToken: refreshToken},
+    //     });
 
-    }
+    // }
 }

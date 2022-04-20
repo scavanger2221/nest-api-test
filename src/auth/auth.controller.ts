@@ -2,7 +2,7 @@ import {Body,Controller,Get,HttpCode,HttpStatus,Post,Req,Res,UseGuards,} from '@
 import { Request, Response} from 'express';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
-import { JwtAuthGuard } from './jwt-auth.guard';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -20,17 +20,9 @@ export class AuthController {
                 validatedUser,
             );
 
-            res.cookie('access_token', accessToken, {
-                httpOnly: true,
-                //max age is set to 10 minute
-                maxAge: 10 * 60 * 1000,
-            });
+            res.header('x-access-token', accessToken);
 
-            res.cookie('refresh_token', refreshToken, {
-                httpOnly: true,
-                //max age is set to 1 week
-                maxAge: 100 * 60 * 24 * 7,
-            });
+            res.header('x-refresh-token', refreshToken);
 
             return res.jsonp({
                 message: 'Login Successful',
